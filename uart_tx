@@ -1,0 +1,82 @@
+`timescale 1ns / 1ps
+module uart_tx #(
+    parameter CLK_FREQ = 100_000_000,  
+    parameter BAUD_RATE = 115200
+) (
+    input wire clk,        
+    input wire reset,       
+    input wire tx_start,   
+    input wire [7:0] tx_data, 
+    output reg tx,          
+    output wire tx_busy     
+);
+    localparam CYCLES_PER_BIT = CLK_FREQ / BAUD_RATE;
+    localparam IDLE = 2'b00,
+               START_BIT = 2'b01,
+               DATA_BITS = 2'b10,
+               STOP_BIT = 2'b11;
+       
+    reg [1:0] current_state;
+    reg [2:0] bit_index;
+    reg [31:0] clock_counter;
+    reg [7:0] data_reg;
+   
+    assign tx_busy = (current_state != IDLE);
+    
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            current_state <= IDLE;
+            tx <= 1'b1; 
+            clock_counter <= 0;
+            bit_index <= 0;
+            data_reg <= 0;
+        end else begin
+            case (current_state)
+                IDLE: begin
+                    tx <= 1'b1; 
+                    if (tx_start) begin
+                        data_reg <= tx_data;
+                        current_state <= START_BIT;
+                        clock_counter <= 0;
+                    end
+                end
+                
+                START_BIT: begin
+                    tx <= 1'b0; 
+                    if (clock_counter < CYCLES_PER_BIT - 1) begin
+                        clock_counter <= clock_counter + 1;
+                    end else begin
+                        clock_counter <= 0;
+                        current_state <= DATA_BITS;
+                        bit_index <= 0;
+                    end
+                end
+                
+                DATA_BITS: begin
+                    tx <= data_reg[bit_index]; 
+                    if (clock_counter < CYCLES_PER_BIT - 1) begin
+                        clock_counter <= clock_counter + 1;
+                    end else begin
+                        clock_counter <= 0;
+                        if (bit_index < 7) begin
+                            bit_index <= bit_index + 1;
+                        end else begin
+                            current_state <= STOP_BIT;
+                        end
+                    end
+                end
+                
+                STOP_BIT: begin
+                    tx <= 1'b1;
+                    if (clock_counter < CYCLES_PER_BIT - 1) begin
+                        clock_counter <= clock_counter + 1;
+                    end else begin
+                        current_state <= IDLE;
+                    end
+                end
+                
+                default: current_state <= IDLE;
+            endcase
+        end
+    end
+endmodule
