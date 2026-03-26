@@ -1,0 +1,14 @@
+module execute_stage (
+    input [31:0] regData1,
+    input [31:0] regData2,
+    input [31:0] immExt,
+    input [1:0] forwardAE,
+    input [1:0] forwardBE,
+    output [31:0] aluResult,
+    output [31:0] aluSrcA,
+    output [31:0] aluSrcB
+);
+    assign aluSrcA = regData1;
+    assign aluSrcB = immExt;
+    assign aluResult = aluSrcA + aluSrcB;
+endmodule
