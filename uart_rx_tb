@@ -1,0 +1,77 @@
+`timescale 1ns/1ps
+
+// Parameters
+`define CLOCK_FREQ 50000000
+`define BAUD_RATE 9600
+`define CLOCK_PERIOD 20
+`define BIT_DURATION (1000000000 / `BAUD_RATE)
+
+module uart_rx_tb;
+
+    // Signals
+    reg clk;
+    reg reset;
+    reg rx_line;
+    wire [7:0] received_data;
+    wire data_ready;
+
+    // Instantiate UART Receiver
+    uart_receiver #(
+        .CLOCK_FREQ(`CLOCK_FREQ),
+        .BAUD_RATE(`BAUD_RATE)
+    ) uut (
+        .clk(clk),
+        .reset(reset),
+        .rx_line(rx_line),
+        .received_data(received_data),
+        .data_ready(data_ready)
+    );
+
+    // Clock generation (50 MHz)
+    always #(`CLOCK_PERIOD/2) clk = ~clk;
+
+    // Task to send one byte through RX line
+    task send_uart_byte(input [7:0] byte_data);
+        integer i;
+        begin
+            rx_line <= 0;
+            #(`BIT_DURATION);
+            for (i = 0; i < 8; i = i + 1) begin
+                rx_line <= byte_data[i];
+                #(`BIT_DURATION);
+            end
+            rx_line <= 1;
+            #(`BIT_DURATION);
+        end
+    endtask
+
+    // Initialization
+    initial begin
+        clk = 0;
+        reset = 0;
+        rx_line = 1;
+    end
+
+    // Test procedure
+    initial begin
+        reset = 1;
+        #(10 * `CLOCK_PERIOD);
+        reset = 0;
+
+        #(`BIT_DURATION);
+        send_uart_byte(8'h41);  // Send 'A'
+
+        #(5 * `BIT_DURATION);
+        send_uart_byte(8'h5A);  // Send 'Z'
+
+        #(10 * `BIT_DURATION);
+        $stop;
+    end
+
+    // Monitor output
+    initial begin
+        $monitor("Time = %0t | received_data = %h | data_ready = %b", 
+                  $time, received_data, data_ready);
+    end
+
+endmodule
