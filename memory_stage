@@ -1,0 +1,14 @@
+module memory_stage (
+    input clk,
+    input [31:0] aluOutE,
+    input [31:0] writeData,
+    output [31:0] readDataM
+);
+    reg [31:0] data_mem [0:255];
+
+    assign readDataM = data_mem[aluOutE[9:2]];
+
+    always @(posedge clk) begin
+        // Memory write logic can be added here
+    end
+endmodule
