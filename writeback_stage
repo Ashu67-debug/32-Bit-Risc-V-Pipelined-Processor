@@ -1,0 +1,7 @@
+module writeback_stage (
+    input [31:0] aluResult,
+    input [31:0] readDataM,
+    output [31:0] resultW
+);
+    assign resultW = aluResult;
+endmodule
