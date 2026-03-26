@@ -1,0 +1,76 @@
+`timescale 1ns / 1ps
+
+module uart_tx_tb;
+
+    localparam CLOCK_HZ = 100_000_000;
+    localparam BAUD_RATE = 115200;
+    localparam BIT_PERIOD = 1_000_000_000 / BAUD_RATE; // in ns
+    localparam CLOCK_PERIOD = 10; // ns (100 MHz)
+
+    reg clk;
+    reg reset;
+    reg tx_start;
+    reg [7:0] tx_data;
+    wire tx;
+    wire tx_busy;
+
+    // Instantiate UART TX
+    uart_tx #(
+        .CLOCK_HZ(CLOCK_HZ),
+        .BAUD_RATE(BAUD_RATE)
+    ) uut (
+        .clk(clk),
+        .reset(reset),
+        .tx_start(tx_start),
+        .tx_data(tx_data),
+        .tx(tx),
+        .tx_busy(tx_busy)
+    );
+
+    // Clock generator (fix)
+    initial clk = 0;
+    always #(CLOCK_PERIOD/2) clk = ~clk;
+
+    // Test process
+    initial begin
+        $display("UART TX Test Begin");
+
+        reset = 1;
+        tx_start = 0;
+        tx_data = 8'h00;
+        #(CLOCK_PERIOD * 5);
+        reset = 0;
+        #(CLOCK_PERIOD * 10);
+
+        // Send 0x55
+        $display("Sending 0x55...");
+        tx_data = 8'h55;
+        tx_start = 1;
+        #(CLOCK_PERIOD);
+        tx_start = 0;
+        wait (tx_busy == 0);
+        #(BIT_PERIOD * 2);
+
+        // Send 0xAA
+        $display("Sending 0xAA...");
+        tx_data = 8'hAA;
+        tx_start = 1;
+        #(CLOCK_PERIOD);
+        tx_start = 0;
+        wait (tx_busy == 0);
+        #(BIT_PERIOD * 2);
+
+        // Send 0x37
+        $display("Sending 0x37...");
+        tx_data = 8'h37;
+        tx_start = 1;
+        #(CLOCK_PERIOD);
+        tx_start = 0;
+        wait (tx_busy == 0);
+        #(BIT_PERIOD * 2);
+
+        $display("All transmissions complete.");
+        $finish;
+    end
+
+endmodule
