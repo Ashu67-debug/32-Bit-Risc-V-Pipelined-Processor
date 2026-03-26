@@ -1,0 +1,33 @@
+module decode_stage (
+    input clk,
+    input [31:0] instrF,
+    input [31:0] pcF,
+    input [31:0] pcPlus4F,
+    input regWriteW,
+    input [4:0] rdW,
+    input [31:0] resultW,
+    output [31:0] regData1D,
+    output [31:0] regData2D,
+    output [31:0] immExtD,
+    output [4:0] rdD,
+    output [31:0] instrD,
+    output [31:0] pcD,
+    output [31:0] pcPlus4D
+);
+    reg [31:0] reg_file [0:31];
+
+    wire [4:0] rs1 = instrF[19:15];
+    wire [4:0] rs2 = instrF[24:20];
+    assign immExtD = {{20{instrF[31]}}, instrF[31:20]};
+
+    assign regData1D = reg_file[rs1];
+    assign regData2D = reg_file[rs2];
+    assign rdD = instrF[11:7];
+    assign instrD = instrF;
+    assign pcD = pcF;
+    assign pcPlus4D = pcPlus4F;
+
+    always @(posedge clk) begin
+        if (regWriteW) reg_file[rdW] <= resultW;
+    end
+endmodule
