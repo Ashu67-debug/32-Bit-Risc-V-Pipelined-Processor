@@ -1,0 +1,41 @@
+`timescale 1ns/1ps
+
+module immediate_generator_tb;
+
+    reg [31:0] instruction;
+
+    wire [31:0] imm_out;
+
+    immediate_generator uut (
+        .instruction(instruction),
+        .imm_out(imm_out)
+    );
+
+    initial begin
+        $display("----- Immediate Generator Testbench -----");
+
+        instruction = 32'b000000000110_00010_000_00001_0010011;  
+        #10;
+        $display("I-type (addi): imm = %d (expected 12)", imm_out);
+
+        instruction = 32'b0000000_00001_00010_010_01000_0100011;  
+        #10;
+        $display("S-type (sw): imm = %d (expected 8)", imm_out);
+
+        instruction = 32'b1111111_00010_00001_000_11110_1100011; 
+        #10;
+        $display("B-type (beq): imm = %d (expected -4)", imm_out);
+
+        instruction = 32'b00010010001101000101_00000_0110111;  
+        #10;
+        $display("U-type (lui): imm = 0x%h (expected 0x12345000)", imm_out);
+
+        instruction = 32'b000000000001_00000000_0_00000000_1101111;  
+        #10;
+        $display("J-type (jal): imm = %d (expected 16)", imm_out);
+
+        $display("----- End of Testbench -----");
+        #10 $finish;
+    end
+
+endmodule
