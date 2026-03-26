@@ -1,0 +1,32 @@
+module fetch_stage (
+    input clk,
+    input reset,
+    input pcSrc,
+    input [31:0] pcTarget,
+    output reg [31:0] pcF,
+    output [31:0] instrF,
+    output [31:0] pcPlus4F
+);
+
+    reg [31:0] pc;
+
+    assign pcPlus4F = pc + 4;
+
+    // Instruction Logic (hardcoded instead of memory)
+    assign instrF = (pc[9:2] == 8'd0) ? 32'h00000293 : // ADDI x5, x0, 0
+                    (pc[9:2] == 8'd1) ? 32'h00500313 : // ADDI x6, x0, 5
+                    (pc[9:2] == 8'd2) ? 32'h0062b3b3 : // ADD  x7, x5, x6
+                    32'h00000013; // Default NOP (ADDI x0, x0, 0)
+
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            pc <= 0;
+        else if (pcSrc)
+            pc <= pcTarget;
+        else
+            pc <= pc + 4;
+        
+        pcF <= pc;
+    end
+
+endmodule
