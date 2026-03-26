@@ -1,0 +1,35 @@
+`timescale 1ns / 1ps
+
+module pipeline_tb;
+
+    reg clk;
+    reg reset;
+
+    // Instantiate the DUT (Device Under Test)
+    pipeline_top uut (
+        .clk(clk),
+        .reset(reset)
+    );
+
+    // Generate Clock
+    always #5 clk = ~clk;
+
+    // Initial Block for Simulation Control and Debug
+    initial begin
+        // Debug Display Setup
+        $display("Time\tPCF\t\tInstrF\t\tResultW");
+        $monitor("%0t\t%h\t%h\t%h", $time, uut.pcF, uut.instrF, uut.resultW);
+
+        // Simulation Flow
+        clk = 0;
+        reset = 1;
+        #20;
+        reset = 0;
+
+        // Let it run for a while
+        #200;
+
+        $finish;
+    end
+
+endmodule
