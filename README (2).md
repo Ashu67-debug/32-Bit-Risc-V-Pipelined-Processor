@@ -2,9 +2,6 @@
 
 > A 5-stage pipelined RISC-V (RV32I) processor designed in Verilog, synthesized on a Xilinx Artix-7 FPGA, and integrated with a DHT22 humidity sensor via UART for real-time IoT monitoring.
 
-**BIT SIPAR-25 Research Internship | BIT Mesra, June 2025**  
-**Guide:** Dr. Vijay Nath, Associate Professor, ECE Department  
-**Team:** Suman Kumari · Ashutosh Gupta · Kaushiki · Piyush Kumar Singh
 
 ---
 
@@ -409,22 +406,3 @@ risc_v_pipeline/
 | AI accelerator (MAC unit) | Edge machine learning inference |
 | SystemVerilog + UVM testbench | Formal verification coverage |
 
----
-
-## Acknowledgements
-
-We extend our gratitude to **Dr. Vijay Nath** for his guidance throughout this project, to the **DRIE Office** at BIT Mesra for facilitating the SIPAR-25 summer research internship, and to the Department of Electronics & Communication Engineering for providing laboratory resources.
-
----
-
-## References
-
-1. Waterman, A., & Asanović, K. (2017). *The RISC-V Instruction Set Manual*. UC Berkeley.
-2. Patterson, D. A., & Hennessy, J. L. (2017). *Computer Organization and Design: RISC-V Edition*. Morgan Kaufmann.
-3. Xilinx. (2021). *Artix-7 FPGA Data Sheet*. Xilinx Inc.
-4. Aosong Electronics. (2020). *DHT22 Humidity Sensor Technical Documentation*.
-5. Espressif Systems. (2021). *ESP32 Technical Reference Manual*.
-
----
-
-*BIT SIPAR 2025 · Birla Institute of Technology, Mesra · June 2025*
