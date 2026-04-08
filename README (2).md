@@ -1,6 +1,6 @@
 # 32-Bit RISC-V Pipelined Processor for IoT
 
-> A 5-stage pipelined RISC-V (RV32I) processor designed in Verilog, synthesized on a Xilinx Artix-7 FPGA, and integrated with a DHT22 humidity sensor via UART for real-time IoT monitoring.
+ A 5-stage pipelined RISC-V (RV32I) processor designed in Verilog, synthesized on a Xilinx Artix-7 FPGA, and integrated with a DHT22 humidity sensor via UART for real-time IoT monitoring.
 
 
 ---
